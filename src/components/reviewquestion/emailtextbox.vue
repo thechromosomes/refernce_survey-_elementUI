@@ -1,0 +1,50 @@
+<template>
+    <div class="emailinput">
+      <v-text-field   label="Email: " disabled v-model="answer" ></v-text-field>
+    </div>
+</template>
+<script>
+export default {
+   props:['question'],
+  data () {
+      return {
+        rules: {
+          email: value => {
+            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            return pattern.test(value) || 'Invalid e-mail.'
+          }
+        },
+        answer: ""
+      }
+    },
+    methods :{
+    },
+    watch:{
+    },
+    created: function () {
+    var this_attempt = window.surveyattemptid
+    axios.post(`/getattemptanswer`,{
+      'questionid':this.question._id,
+      'attemptid':this_attempt._id
+      }).then(response => {
+        if(response.data.status == 1){
+          if(response.data.data != null){
+            this.answer = JSON.parse(response.data.data.answer)
+          }
+        }
+    })
+    .catch(e => {
+      this.errors.push(e)
+    })  
+  }
+}
+</script>
+<style scoped>
+  .emailinput{
+    padding: 0px 10px 10px 10px;
+    margin-top: 10px;
+  }
+  .emailinput:hover{
+    background-color: #ebebeb;
+  }
+</style>
